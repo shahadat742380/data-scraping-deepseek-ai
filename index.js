@@ -11,38 +11,42 @@ const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
 });
 
-const scrap = async () => {
+const scrap = async (url, documentName) => {
     try {
-        const response = await axios.get('https://vedabase.io/en/library/bg/');
+        const response = await axios.get(url);
 
         const $ = cheerio.load(response.data);
-        const content = $('body').text();
+        const content = $('body').find('h1, h2, h4, h5, h6, p, span, ul, li, th, td, dd, dt').map((i, el) => $(el).text()).get().join('\n\n');
+
+        console.log(content); // Log the extracted content
 
         const aiResponse = await openai.chat.completions.create({
             messages: [
                 { role: 'system', content: 'You are a helpful assistant.' },
                 {
                     role: 'user',
-                    content: `Analyze and summarize the following HTML content in Markdown format:\n\n${content}`,
+                    content: `Analyze and summarize the following content and create a Markdown format with the necessary content.:\n\n${content}`,
                 },
             ],
             model: 'deepseek-chat',
         });
 
-        // Extract the content from the response
+        
+
         const markdownContent = aiResponse.choices[0].message.content;
 
-        await fs.writeFile('document.md', markdownContent);
-        console.log('Markdown document created successfully.');
+        await fs.writeFile(`${documentName}.md`, markdownContent);
+        console.log(`Markdown document '${documentName}.md' created successfully.`);
 
     } catch (error) {
         if (error.response && error.response.status === 429) {
             console.error('Rate limit exceeded. Retrying after 60 seconds...');
-            setTimeout(scrap, 60000); 
+            setTimeout(() => scrap(url, documentName), 60000); 
         } else {
             console.error('Error fetching or processing data:', error);
         }
     }
 };
 
-scrap();
+// Example usage
+scrap('https://www.peacockindia.in/', 'peacock');
