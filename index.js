@@ -16,9 +16,9 @@ const scrap = async (url, documentName) => {
         const response = await axios.get(url);
 
         const $ = cheerio.load(response.data);
-        const content = $('body').find('h1, h2, h4, h5, h6, p, span, ul, li, th, td, dd, dt').map((i, el) => $(el).text()).get().join('\n\n');
+        const content = $('body').text().trim(); 
 
-        console.log(content); // Log the extracted content
+        console.log(content); 
 
         const aiResponse = await openai.chat.completions.create({
             messages: [
@@ -49,4 +49,4 @@ const scrap = async (url, documentName) => {
 };
 
 // Example usage
-scrap('https://www.peacockindia.in/', 'peacock');
+scrap('https://vedabase.io/en/library/bg/', 'abcd');
