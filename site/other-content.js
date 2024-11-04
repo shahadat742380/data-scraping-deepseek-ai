@@ -26,18 +26,15 @@ const fetchChapterContent = async (link) => {
             }
         });
 
-        // Format the Markdown content
         const markdownContent = `# ${title}\n\n${contents.join('\n\n')}`;
 
-        // Ensure the content folder exists
         await fs.mkdir('content', { recursive: true });
 
-        // Generate a filename based on the title or link (replace spaces with underscores)
         const sanitizedTitle = title.replace(/\s+/g, '_').replace(/[^\w-]/g, '');
-        const fileName = sanitizedTitle || link.replace(/\//g, ''); // Fallback to link if title is empty
+        const fileName = sanitizedTitle || link.replace(/\//g, ''); 
+        
         const filePath = path.join('content', `${fileName}.md`);
 
-        // Write the Markdown file
         await fs.writeFile(filePath, markdownContent);
         console.log(`Markdown file created: ${filePath}`);
 

@@ -49,4 +49,4 @@ const scrap = async (url, documentName) => {
 };
 
 // Example usage
-scrap('https://vedabase.io/en/library/bg/', 'abcd');
+scrap('https://www.peacockindia.in/', 'peacock');

@@ -41,13 +41,9 @@ const scrap2 = async () => {
         // Fetch the webpage
         const response = await axios.get('https://vedabase.io/en/library/bg/');
         
-        // Load the HTML into Cheerio for parsing
         const $ = cheerio.load(response.data);  
-
-        // Extract the title
         const title = $('h1').first().text().trim();
 
-        // Extract all chapter names within #content a tags
         const chaptersName = [];
         $('#content a').each((index, element) => {
             const chapterText = $(element).text().trim();
@@ -56,10 +52,8 @@ const scrap2 = async () => {
             }
         });
 
-        // Format the extracted data into markdown content
         const markdownContent = `# ${title}\n\n## Chapters\n\n${chaptersName.map((chapter, index) => `- Chapter ${index + 1}: ${chapter}`).join('\n')}`;
 
-        // Write the markdown content to 'document.md' file
         await fs.writeFile('document.md', markdownContent);
         console.log("Data successfully saved to document.md");
 
